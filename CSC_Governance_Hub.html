@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSC Governance Record</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --navy: #1F3864;
+    --navy-deep: #0B2545;
+    --gold: #C99A2E;
+    --gold-bright: #FFC000;
+    --lightblue: #D6E4F0;
+    --lightblue-2: #7BB8E8;
+    --paper: #F5F9FF;
+    --alert-bg: #FEF9EC;
+    --alert-border: #B23A2E;
+    --resolved-bg: #E2EFDA;
+    --resolved-border: #4C8C4A;
+    --ink: #1A1A1A;
+    --grey: #5A6472;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.5;
+    padding-bottom: 60px;
+  }
+
+  /* ===== STICKY HEADER ===== */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--navy-deep);
+    color: white;
+    padding: 12px 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .crest {
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 1.5px solid var(--gold-bright);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .crest .csc { font-size: 9px; font-weight: 800; color: white; }
+  .crest .yr { font-size: 5.5px; font-weight: 600; color: var(--gold-bright); }
+  .header-title { flex: 1; }
+  .header-title .eyebrow { font-size: 9.5px; font-weight: 700; letter-spacing: 1.5px; color: var(--gold-bright); text-transform: uppercase; }
+  .header-title h1 { font-family: 'Source Serif 4', serif; font-size: 17px; font-weight: 800; line-height: 1.1; }
+  #search-box {
+    margin-top: 10px;
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: none;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ===== NAV PILLS ===== */
+  nav {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 10px 16px 4px 16px;
+    background: var(--navy);
+    -webkit-overflow-scrolling: touch;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  nav a {
+    flex-shrink: 0;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: white;
+    background: rgba(255,255,255,0.12);
+    padding: 7px 12px;
+    border-radius: 16px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  nav a.gold { background: var(--gold); color: var(--navy-deep); }
+
+  main { padding: 16px; max-width: 720px; margin: 0 auto; }
+
+  section { margin-bottom: 28px; scroll-margin-top: 118px; }
+  section h2 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy-deep);
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+  }
+  section .sub { font-size: 12px; color: var(--grey); margin-bottom: 12px; font-style: italic; }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: white;
+    border: 1px solid var(--lightblue-2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .card.resolved { border-left: 4px solid var(--resolved-border); }
+  .card.flagged { border-left: 4px solid var(--alert-border); background: var(--alert-bg); }
+  .card-tag {
+    display: inline-block;
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+  }
+  .tag-resolved { background: var(--resolved-bg); color: var(--resolved-border); }
+  .tag-flagged { background: #FBE2DE; color: var(--alert-border); }
+  .tag-info { background: var(--lightblue); color: var(--navy); }
+  .card-q { font-weight: 700; font-size: 14px; color: var(--navy-deep); margin-bottom: 5px; }
+  .card-a { font-size: 13.5px; line-height: 1.5; }
+  .card-src { font-size: 11px; color: var(--grey); margin-top: 6px; font-style: italic; }
+
+  /* ===== TABLES (as stacked cards on mobile) ===== */
+  .row-card {
+    background: white;
+    border: 1px solid var(--lightblue-2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+  }
+  .row-card .rc-title { font-weight: 700; color: var(--navy-deep); font-size: 14px; margin-bottom: 4px; }
+  .row-card .rc-meta { font-size: 11px; color: var(--grey); margin-bottom: 6px; }
+  .row-card .rc-body { font-size: 13px; line-height: 1.5; margin-bottom: 6px; }
+  .vote-pill { display: inline-flex; gap: 8px; align-items: center; font-size: 12px; font-weight: 700; }
+  .vote-for { color: var(--resolved-border); }
+  .vote-against { color: var(--alert-border); }
+  .result-badge {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 3px 9px;
+    border-radius: 10px;
+    margin-top: 6px;
+  }
+  .badge-unanimous { background: var(--resolved-bg); color: var(--resolved-border); }
+  .badge-contested { background: var(--alert-bg); color: var(--alert-border); }
+
+  /* ===== FLAG ITEMS ===== */
+  .flag-item {
+    background: white;
+    border: 1px solid var(--lightblue-2);
+    border-left: 4px solid var(--navy);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+  }
+  .flag-num {
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    width: 24px; height: 24px;
+    background: var(--navy);
+    color: white;
+    font-size: 11px; font-weight: 800;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+  .flag-cat { font-size: 10px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; }
+  .flag-body { font-size: 13px; line-height: 1.5; margin: 6px 0; }
+  .flag-src { font-size: 10.5px; color: var(--grey); font-style: italic; }
+
+  /* ===== TIMELINE ===== */
+  .tl-entry {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .tl-date-col {
+    flex-shrink: 0;
+    width: 68px;
+    font-size: 10.5px;
+    font-weight: 800;
+    color: var(--navy);
+    padding-top: 2px;
+  }
+  .tl-line-col {
+    flex-shrink: 0;
+    width: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .tl-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--navy); margin-top: 4px; }
+  .tl-line { flex: 1; width: 2px; background: var(--lightblue-2); margin-top: 2px; }
+  .tl-content { font-size: 13px; line-height: 1.5; padding-bottom: 2px; }
+  .tl-content .src { font-size: 10.5px; color: var(--grey); font-style: italic; margin-top: 2px; }
+
+  /* ===== FILES ===== */
+  .file-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    border: 1px solid var(--lightblue-2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .file-icon {
+    width: 36px; height: 36px;
+    background: var(--lightblue);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .file-name { font-weight: 700; font-size: 13.5px; color: var(--navy-deep); }
+  .file-desc { font-size: 11.5px; color: var(--grey); margin-top: 2px; }
+
+  .hidden { display: none !important; }
+  .no-results { text-align: center; padding: 30px 10px; color: var(--grey); font-size: 13px; }
+
+  footer {
+    text-align: center;
+    font-size: 10.5px;
+    color: var(--grey);
+    padding: 20px 16px;
+  }
+
+  /* ===== SIDEBAR (desktop / tablet only) ===== */
+  .sidebar { display: none; }
+
+  @media (min-width: 900px) {
+    header { padding: 14px 24px; }
+    .header-top { max-width: 1100px; margin: 0 auto; }
+    #search-box { max-width: 1100px; margin: 10px auto 0 auto; display: block; }
+    nav { display: none; } /* horizontal pills hidden on desktop, sidebar replaces them */
+
+    .sidebar {
+      display: block;
+      position: fixed;
+      top: 96px; /* below header */
+      left: 0;
+      width: 250px;
+      height: calc(100vh - 96px);
+      overflow-y: auto;
+      background: var(--navy);
+      padding: 18px 0;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+    }
+    .sidebar a {
+      display: block;
+      padding: 11px 22px;
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .sidebar a:hover { background: rgba(255,255,255,0.08); }
+    .sidebar a.active {
+      background: rgba(255,255,255,0.1);
+      border-left-color: var(--gold-bright);
+      color: white;
+    }
+    .sidebar .sb-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gold-bright);
+      padding: 4px 22px 10px 22px;
+    }
+
+    body { padding-bottom: 0; }
+    main {
+      margin-left: 250px;
+      max-width: 760px;
+      padding: 28px 32px;
+    }
+    section { scroll-margin-top: 110px; }
+    .card, .row-card, .flag-item { max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="crest"><span class="csc">CSC</span><span class="yr">1936</span></div>
+    <div class="header-title">
+      <div class="eyebrow">Governance Record</div>
+      <h1>Colombo Swimming Club</h1>
+    </div>
+  </div>
+  <input type="text" id="search-box" placeholder="Search this record… e.g. 'Article 13A', 'Butani', 'quorum'" oninput="filterContent()">
+</header>
+
+<nav>
+  <a href="#article13a" class="gold">Article 13A</a>
+  <a href="#composition">GC / AT / AC by Year</a>
+  <a href="#nominations">Nominations 2026</a>
+  <a href="#resolutions">AGM Resolutions</a>
+  <a href="#flags">Governance Flags</a>
+  <a href="#files">Related Files</a>
+</nav>
+
+<aside class="sidebar">
+  <div class="sb-label">Governance Record</div>
+  <a href="#article13a" data-section="article13a">Article 13A</a>
+  <a href="#composition" data-section="composition">GC / AT / AC by Year</a>
+  <a href="#nominations" data-section="nominations">Nominations 2026</a>
+  <a href="#resolutions" data-section="resolutions">AGM Resolutions</a>
+  <a href="#flags" data-section="flags">Governance Flags</a>
+  <a href="#files" data-section="files">Related Files</a>
+</aside>
+
+<main id="main-content">
+
+  <section id="article13a">
+    <h2>Article 13A — Now Resolved</h2>
+    <div class="sub">The Audit Committee rule question, answered directly by the Chair at the 28 March 2026 AGM</div>
+
+    <div class="card resolved">
+      <span class="card-tag tag-resolved">Resolved</span>
+      <div class="card-q">Which text governs — the 8 March original, or the 19 March amendment?</div>
+      <div class="card-a">The <b>original (8 March 2024)</b> text. The Chair confirmed directly: "as per the approved AGM minutes, only the original resolution had been adopted."</div>
+      <div class="card-src">AGM Minutes, 28 Mar 2026, p.7</div>
+    </div>
+
+    <div class="card resolved">
+      <span class="card-tag tag-resolved">Resolved</span>
+      <div class="card-q">What does that confirmed text actually require?</div>
+      <div class="card-a">3 members. Chairman must be a <b>Chartered Accountant</b>. Other members should have a finance background. Quorum for meetings is 3.</div>
+      <div class="card-src">Original Resolution, 8 Mar 2024; restated at AGM p.7</div>
+    </div>
+
+    <div class="card flagged">
+      <span class="card-tag tag-flagged">Flagged — unresolved</span>
+      <div class="card-q">Is the current AC Chairman actually a Chartered Accountant?</div>
+      <div class="card-a"><b>No.</b> Current AC Chairman Shanker Somasundaram is CIMA-qualified, not a Chartered Accountant — a live breach of the Club's own just-confirmed rule, raised on the floor by the Chair himself.</div>
+      <div class="card-src">AGM Minutes, 28 Mar 2026, p.7</div>
+    </div>
+
+    <div class="card flagged">
+      <span class="card-tag tag-flagged">Flagged — unresolved</span>
+      <div class="card-q">Has the Audit Committee met its 3-member quorum requirement?</div>
+      <div class="card-a">Disputed. Concern raised that some AC meetings may have lacked quorum. Somasundaram responded all 3 members participated, some virtually — leaving open whether virtual attendance satisfies the rule as written.</div>
+      <div class="card-src">AGM Minutes, 28 Mar 2026, p.7</div>
+    </div>
+
+    <div class="card resolved">
+      <span class="card-tag tag-resolved">Resolved</span>
+      <div class="card-q">Is the AC now Trustee-based, or a standalone 3-person elected body?</div>
+      <div class="card-a">Standalone 3-person body, matching the confirmed original text — and matching what was described from direct knowledge, now corroborated by the AGM record.</div>
+      <div class="card-src">AGM Minutes, 28 Mar 2026, p.7</div>
+    </div>
+  </section>
+
+  <section id="composition">
+    <h2>GC / Additional Trustees / Audit Committee, by Year</h2>
+    <div class="sub">Who's actually held these seats, tracked across every year reviewed so far</div>
+
+    <div class="row-card">
+      <div class="rc-title">Pre–March 2023</div>
+      <div class="rc-body"><b>Audit Committee did not exist.</b> Created for the first time by a resolution at the March 2023 AGM.</div>
+    </div>
+
+    <div class="row-card">
+      <div class="rc-title">2023 (post March AGM)</div>
+      <div class="rc-body"><b>Additional Trustees:</b> Chandan de Silva, Chandima Gunewardene, Suren Kundanmal.<br>
+      <b>Audit Committee (5-person, pre-Text-A structure):</b> the 3 ATs above + Keshini Jayawardene (stepped down Dec 2023) + Brian Selvanayagam (CA).</div>
+      <div class="rc-meta">Selvanayagam later suspended from GC/membership in 2025/26 — see Governance Flag 34</div>
+    </div>
+
+    <div class="row-card">
+      <div class="rc-title">2024/25 (post 30 March 2024 AGM)</div>
+      <div class="rc-body"><b>GC:</b> President Rohan Paulus · VP Rohan Abeykoon · GenSec Jeevantha Jayatilake (+6 others, 8 GC positions found).<br>
+      <b>Additional Trustees:</b> Lucille Wijewardena, Mohan Wijesinghe, Shirendra Lawrence.<br>
+      <b>Audit Committee:</b> still the old 5-person AT-based structure — the 3 ATs above + Shanker Somasundaram + (initially Anura Fernando, who moved to GC).</div>
+      <div class="rc-meta">This predates the Article 13A resolution — the AC hadn't yet transitioned to the now-confirmed original text</div>
+    </div>
+
+    <div class="row-card">
+      <div class="rc-title">31 Jan 2025 →</div>
+      <div class="rc-body">GC changed mid-term; H.D. Dewendre becomes President (interim, per the FY2024/25 AC Report, which notes two GCs served within the same reporting period).</div>
+    </div>
+
+    <div class="row-card">
+      <div class="rc-title">2025/26 (through 28 March 2026 AGM)</div>
+      <div class="rc-body"><b>GC:</b> President H.D. Dewendre · VP Don Lalith Hilary Ganlath (outgoing) · GenSec Nishanthi Ratwatte (outgoing).<br>
+      <b>Additional Trustees:</b> Lucille Wijewardena, Mohan Wijesinghe, Shirendra Lawrence (outgoing).<br>
+      <b>Audit Committee:</b> 3-person standalone body per the now-confirmed original text — Shanker Somasundaram (Chairman, CIMA-qualified). Other 2 members not named in documents reviewed.</div>
+      <div class="rc-meta">Somasundaram also chairs the Nominations Sub-Committee — same person, two roles</div>
+    </div>
+
+    <div class="row-card">
+      <div class="rc-title">2026/27 – 2026/28 (from 28 March 2026 AGM)</div>
+      <div class="rc-body"><b>GC:</b> President H.D. Dewendre (uncontested, 2nd term) · VP/Finance Mohan Wijesinghe · GenSec Shamalie Fonseka · F&B Nadeeka Abeysekera · Asst F&B Asitha Peter Jasinghe · Club Captain Channe Wijemanne · Entertainment Roshan Motha · House &amp; Works A. Rajenthiran · General Member Rizan Jiffrey.<br>
+      <b>Additional Trustees:</b> Lucille Wijewardena, Shirendra Lawrence, Wyvil Scharenguivel.</div>
+      <div class="rc-meta">Confirms "GC of nine": President + 8. Mohan Wijesinghe moved from AT to VP — becoming a Trustee proper, distinct from Additional Trustee.</div>
+    </div>
+  </section>
+
+  <section id="nominations">
+    <h2>The 2026 Nominations Committee Saga</h2>
+    <div class="sub">Nominations Committee: Shanker Somasundaram (Chairman) · Pradeep Cheruvari · Gamini Gangabadaarachchi</div>
+
+    <div class="tl-entry">
+      <div class="tl-date-col">13 MAR</div>
+      <div class="tl-line-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
+      <div class="tl-content">Nominations opened. List promised on the notice board by 18 March.</div>
+    </div>
+    <div class="tl-entry">
+      <div class="tl-date-col">17 MAR</div>
+      <div class="tl-line-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
+      <div class="tl-content">NC sends its findings — the Nomination List, with rejections marked — to the GC.</div>
+    </div>
+    <div class="tl-entry">
+      <div class="tl-date-col">18 MAR</div>
+      <div class="tl-line-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
+      <div class="tl-content">List still not displayed. Shamalie Fonseka asks for confirmation and verification of the proposer/seconder/CV rules. Somasundaram replies that "the Audit committee" (sic) had handed the info to the GC.</div>
+    </div>
+    <div class="tl-entry">
+      <div class="tl-date-col">19 MAR</div>
+      <div class="tl-line-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
+      <div class="tl-content">Tilak writes to the NC Chairman: the GC can't fairly judge its own eligibility — if it can override the NC, the NC's role "is rendered meaningless." Separately, Gamini Gangabadaarachchi (an NC member himself) formally warns overriding the NC "would not be ethically appropriate." A separate complaint is filed alleging Kishin Butani ran a WhatsApp group circulating defamatory information about nominees.</div>
+    </div>
+    <div class="tl-entry">
+      <div class="tl-date-col">23 MAR</div>
+      <div class="tl-line-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
+      <div class="tl-content">Shamalie Fonseka formally requests the final NC list with rejection reasons, election guidelines, and independent observers.</div>
+    </div>
+    <div class="tl-entry">
+      <div class="tl-date-col">28 MAR</div>
+      <div class="tl-line-col"><div class="tl-dot"></div></div>
+      <div class="tl-content"><b>AGM:</b> GC's override confirmed on record — CV submission ruled "not a constitutional requirement." Gamini Gangabadaarachchi states on record this "reflected poorly on the work of the Nominations Sub-Committee."</div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <span class="card-tag tag-info">Round 1 — form/technical</span>
+      <div class="card-a">Caught: Tilak Conrad (blank position field, accepted on the spot) and incumbent VP Don Lalith Hilary Ganlath (rejected in his absence — unanimous NC decision). <b>Neither reached Round 2.</b></div>
+    </div>
+    <div class="card">
+      <span class="card-tag tag-info">Round 2 — substantive (dues, CVs, standing)</span>
+      <div class="card-a">Caught: the entire incumbent GC except A. Rajenthiran (via the CV bylaw the GC itself had passed), plus Additional Trustee nominees Shirendra Lawrence and Lucille Wijewardena ("No CV").</div>
+    </div>
+    <div class="card resolved">
+      <span class="card-tag tag-resolved">Outcome</span>
+      <div class="card-a">GC overrode the NC and reinstated the rejected nominees. President uncontested. But the incumbent <b>VP and GenSec still lost anyway</b> — to Mohan Wijesinghe and Shamalie Fonseka. The two reinstated AT nominees (Lawrence, Wijewardena) <b>did</b> win. Kishin Butani — the AT nominee the NC had cleanly approved — did not get elected.</div>
+    </div>
+  </section>
+
+  <section id="resolutions">
+    <h2>28 March 2026 AGM — The Seven Resolutions</h2>
+    <div class="sub">All member-proposed, all passed</div>
+
+    <div class="row-card">
+      <div class="rc-title">1 · Conflict of interest — family members</div>
+      <div class="rc-meta">Jayanath Warasuwitana / Shamalie Fonseka</div>
+      <div class="rc-body">Bars immediate family from simultaneously serving on the GC or any GC-appointed committee.</div>
+      <span class="vote-pill"><span class="vote-for">74 for</span> · <span class="vote-against">15 against</span></span>
+      <div class="result-badge badge-contested">Passed — contested</div>
+    </div>
+
+    <div class="row-card">
+      <div class="rc-title">2 · GC meeting transparency</div>
+      <div class="rc-meta">Jayanath Warasuwitana / Shamalie Fonseka</div>
+      <div class="rc-body">Minutes finalised within 14 days, circulated within 30; must record decisions, authorisations, objections.</div>
+      <span class="vote-pill"><span class="vote-for">65 for</span> · <span class="vote-against">21 against</span></span>
+      <div class="result-badge badge-contested">Passed — contested</div>
+    </div>
+
+    <div class="row-card">
+      <div class="rc-title">3 · Eligibility criteria for office</div>
+      <div class="rc-meta">Romesh Elapatha / Tilak Conrad</div>
+      <div class="rc-body">President/VP: 10+ years' membership. GenSec: 5+. Other GC: 3+. Additional Trustees: 10+.</div>
+      <span class="vote-pill"><span class="vote-for">90 for</span> · <span class="vote-against">0 against</span></span>
+      <div class="result-badge badge-unanimous">Passed — no opposition</div>
+    </div>
+
+    <div class="row-card">
+      <div class="rc-title">4 · Term limits (GC &amp; Additional Trustees)</div>
+      <div class="rc-meta">Romesh Elapatha / Tilak Conrad</div>
+      <div class="rc-body">Max 2 consecutive years same office; max 4 total; then a mandatory 2-year hiatus.</div>
+      <span class="vote-pill"><span class="vote-for">71 for</span> · <span class="vote-against">0 against</span></span>
+      <div class="result-badge badge-unanimous">Passed unanimously</div>
+    </div>
+
+    <div class="row-card">
+      <div class="rc-title">5 · Membership admissions transparency</div>
+      <div class="rc-meta">Soraya Cader / Romesh Elapatha</div>
+      <div class="rc-body">New applicant details posted within 2 weeks; admitted members displayed and read out at the next AGM.</div>
+      <div class="result-badge badge-unanimous">Passed unanimously (vote count not recorded)</div>
+    </div>
+
+    <div class="row-card">
+      <div class="rc-title">6 · Replace Rule 21 — Suspension</div>
+      <div class="rc-meta">Tilak Conrad / Romesh Elapatha</div>
+      <div class="rc-body">Full due-process overhaul: notice of charges, 5-person Disciplinary Committee, right of defence, 1-month timeframe.</div>
+      <span class="vote-pill"><span class="vote-for">78 for</span> · <span class="vote-against">0 against</span></span>
+      <div class="result-badge badge-unanimous">Passed — no opposition</div>
+    </div>
+
+    <div class="row-card">
+      <div class="rc-title">7 · Replace Rule 22 — Expulsion</div>
+      <div class="rc-meta">Tilak Conrad / Romesh Elapatha</div>
+      <div class="rc-body">Mirrors Resolution 6's due-process structure, applied to expulsion.</div>
+      <span class="vote-pill"><span class="vote-for">83 for</span> · <span class="vote-against">0 against</span></span>
+      <div class="result-badge badge-unanimous">Passed unanimously</div>
+    </div>
+
+    <div class="card flagged" style="margin-top:14px;">
+      <span class="card-tag tag-flagged">Live tension</span>
+      <div class="card-a">Resolutions 6 &amp; 7 passed with no opposition at the very meeting where members argued on the floor the Club had just breached this kind of due process, in the Selvanayagam suspension. The Chair maintained no breach occurred. Unresolved — see Governance Flag 34.</div>
+    </div>
+  </section>
+
+  <section id="flags">
+    <h2>Governance Flags 31–41</h2>
+    <div class="sub">Continuing the numbering from the existing addendum (items 23–30)</div>
+
+    <div class="flag-item">
+      <span class="flag-num">31</span><span class="flag-cat">Constitutional Ruling</span>
+      <div class="flag-body">Article 13A: Chair confirmed only the original (8 Mar 2024) resolution was adopted, not the 19 Mar amendment. Resolves Item 27.</div>
+      <div class="flag-src">AGM Minutes, 28 Mar 2026, p.7</div>
+    </div>
+    <div class="flag-item">
+      <span class="flag-num">32</span><span class="flag-cat">Compliance Breach</span>
+      <div class="flag-body">Confirmed Article 13A requires a Chartered Accountant as AC Chairman. Current chairman is CIMA-qualified — a direct breach, raised by the Chair himself.</div>
+      <div class="flag-src">AGM Minutes, 28 Mar 2026, p.7</div>
+    </div>
+    <div class="flag-item">
+      <span class="flag-num">33</span><span class="flag-cat">Process / Quorum</span>
+      <div class="flag-body">Possible AC quorum failures raised. Chairman says all 3 members participated, some virtually — leaves open whether that satisfies the written quorum rule.</div>
+      <div class="flag-src">AGM Minutes, 28 Mar 2026, p.7</div>
+    </div>
+    <div class="flag-item">
+      <span class="flag-num">34</span><span class="flag-cat">Due Process Dispute</span>
+      <div class="flag-body">Brian Selvanayagam expelled from GC and suspended from membership. Members argue due process (Rules 21/22) wasn't followed; Chair maintains it was. Contested, unresolved.</div>
+      <div class="flag-src">Soraya Cader letter, 26 Feb 2026; AGM Minutes p.3-6</div>
+    </div>
+    <div class="flag-item">
+      <span class="flag-num">35</span><span class="flag-cat">Nominations Override</span>
+      <div class="flag-body">NC rejected several nominees across two rounds; GC overrode and reinstated them, citing its "ultimate authority." An NC member himself called the handling poor.</div>
+      <div class="flag-src">Nomination correspondence, 17-23 Mar 2026; AGM Minutes p.9-12</div>
+    </div>
+    <div class="flag-item">
+      <span class="flag-num">36</span><span class="flag-cat">Election Outcome</span>
+      <div class="flag-body">Reinstated incumbent VP and GenSec still lost their seats despite the override. Reinstated AT nominees won theirs. NC-approved nominee Butani did not get elected.</div>
+      <div class="flag-src">AGM Minutes, 28 Mar 2026, p.16-17</div>
+    </div>
+    <div class="flag-item">
+      <span class="flag-num">37</span><span class="flag-cat">Member Conduct Complaint</span>
+      <div class="flag-body">Complaint alleges Kishin Butani ran a WhatsApp group circulating defamatory information about nominees. Outcome not confirmed in documents reviewed.</div>
+      <div class="flag-src">Soraya Cader &amp; Shamalie Fonseka email, 19 Mar 2026</div>
+    </div>
+    <div class="flag-item">
+      <span class="flag-num">38</span><span class="flag-cat">Unauthorised Incorporation</span>
+      <div class="flag-body">Unauthorised "Colombo Swimming Club" entity registered without approval, later struck off. Mohan Wijesinghe says he personally surfaced this, attributing the error to a prior GC.</div>
+      <div class="flag-src">AGM Minutes, 28 Mar 2026, p.2, 5-6</div>
+    </div>
+    <div class="flag-item">
+      <span class="flag-num">39</span><span class="flag-cat">Constitutional Consolidation</span>
+      <div class="flag-body">Constitution never properly consolidated across years — a root cause of the Article 13A ambiguity itself. New Independent Constitutional Committee proposed, ~6-month timeline via SGM.</div>
+      <div class="flag-src">AGM Minutes, 28 Mar 2026, p.8-9</div>
+    </div>
+    <div class="flag-item">
+      <span class="flag-num">40</span><span class="flag-cat">Resolutions Passed</span>
+      <div class="flag-body">Seven member resolutions passed — family conflict-of-interest, minutes transparency, eligibility, term limits, admissions transparency, and due-process rewrites of Rules 21 &amp; 22.</div>
+      <div class="flag-src">AGM Minutes, 28 Mar 2026, p.13-15</div>
+    </div>
+    <div class="flag-item">
+      <span class="flag-num">41</span><span class="flag-cat">Amendments Deferred</span>
+      <div class="flag-body">Six amendments to the resolutions above were never voted on — deferred to the new Constitutional Committee. One member formally objected to future amendment of adopted resolutions.</div>
+      <div class="flag-src">AGM Minutes, 28 Mar 2026, p.15</div>
+    </div>
+  </section>
+
+  <section id="files">
+    <h2>Related Files</h2>
+    <div class="sub">This session's outputs — open the full workbook for merge-ready detail</div>
+
+    <div class="file-card">
+      <div class="file-icon">📊</div>
+      <div>
+        <div class="file-name">CSC_Governance_Record.xlsx</div>
+        <div class="file-desc">The full workbook this page summarises — 6 sheets, merge-ready</div>
+      </div>
+    </div>
+    <div class="file-card">
+      <div class="file-icon">📋</div>
+      <div>
+        <div class="file-name">CSC_GovernanceFlags_Addendum_23-30.xlsx</div>
+        <div class="file-desc">Items 23-30 (March 2024 resolutions) — this record continues from here</div>
+      </div>
+    </div>
+    <div class="file-card">
+      <div class="file-icon">📄</div>
+      <div>
+        <div class="file-name">Article13A_GovernanceNote.pdf</div>
+        <div class="file-desc">Member-facing flyer — due for an update now Article 13A is resolved</div>
+      </div>
+    </div>
+    <div class="file-card">
+      <div class="file-icon">📈</div>
+      <div>
+        <div class="file-name">CSC_8Year_Analysis.xlsx</div>
+        <div class="file-desc">The master financial workbook — merge Governance Flags 31-41 in here</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="no-results hidden" id="no-results">No matches found. Try a different search term.</div>
+
+</main>
+
+<footer>Colombo Swimming Club Governance Record · Compiled July 2026 · Not for external distribution</footer>
+
+<script>
+function filterContent() {
+  const q = document.getElementById('search-box').value.trim().toLowerCase();
+  const sections = document.querySelectorAll('main > section');
+  let anyVisible = false;
+
+  if (q === '') {
+    sections.forEach(s => s.classList.remove('hidden'));
+    document.querySelectorAll('.card, .row-card, .flag-item, .file-card, .tl-entry').forEach(el => el.classList.remove('hidden'));
+    document.getElementById('no-results').classList.add('hidden');
+    return;
+  }
+
+  sections.forEach(section => {
+    let sectionHasMatch = false;
+    const items = section.querySelectorAll('.card, .row-card, .flag-item, .file-card, .tl-entry');
+    if (items.length === 0) {
+      const text = section.innerText.toLowerCase();
+      if (text.includes(q)) { section.classList.remove('hidden'); sectionHasMatch = true; }
+      else { section.classList.add('hidden'); }
+    } else {
+      items.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        if (text.includes(q)) { item.classList.remove('hidden'); sectionHasMatch = true; }
+        else { item.classList.add('hidden'); }
+      });
+      section.classList.toggle('hidden', !sectionHasMatch);
+    }
+    if (sectionHasMatch) anyVisible = true;
+  });
+
+  document.getElementById('no-results').classList.toggle('hidden', anyVisible);
+}
+
+// Scroll-spy for sidebar (desktop only, harmless on mobile since sidebar is hidden)
+const sidebarLinks = document.querySelectorAll('.sidebar a');
+const observedSections = document.querySelectorAll('main > section');
+if (sidebarLinks.length && observedSections.length) {
+  const spy = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        sidebarLinks.forEach(link => {
+          link.classList.toggle('active', link.dataset.section === id);
+        });
+      }
+    });
+  }, { rootMargin: '-100px 0px -70% 0px' });
+  observedSections.forEach(s => spy.observe(s));
+}
+</script>
+
+</body>
+</html>
